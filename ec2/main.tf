@@ -61,13 +61,7 @@ resource "aws_elb" "example" {
 #  availability_zones = ["${formatlist("%s%s", var.ec2_region, var.zone)}"]
   security_groups = ["${aws_security_group.example.id}"]
   subnets = ["${var.subnet_id}"]
-/*
-  access_logs {
-    bucket        = "foo"
-    bucket_prefix = "bar"
-    interval      = 60
-  }
-*/
+
   listener {
     instance_port     = 80
     instance_protocol = "http"
@@ -95,3 +89,28 @@ resource "aws_elb" "example" {
     Name = "terraform-elb"
   }
 }
+/*
+resource "aws_launch_configuration" "aws_conf" {
+  name_prefix   = "terraform-lc-example-"
+  image_id      = "${lookup(var.amis, var.ec2_region)}"
+  instance_type = "t2.micro"
+  key_name = "${aws_key_pair.example.key_name}"
+  user_data = "${template_file.user_data.rendered}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_autoscaling_group" "example" {
+  name                 = "terraform-asg-example"
+  launch_configuration = "${aws_launch_configuration.aws_conf.name}"
+  vpc_zone_identifier = ["${var.subnet_id}"]
+  min_size             = 2
+  max_size             = 2
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+*/
